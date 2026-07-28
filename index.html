@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>chang@ - Conectando Trabajo Independiente y Seguridad Social</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Leaflet CSS for Uber-like map -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="dark-theme">
+    <div class="app-container">
+        
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="logo-container">
+                <span class="logo-text">chang<span class="logo-accent">@</span></span>
+            </div>
+            
+            <nav class="nav-menu">
+                <a href="#agent-section" class="nav-item active" data-view="agent-section">
+                    <i data-lucide="brain-circuit"></i>
+                    <span>Motor Agéntico</span>
+                </a>
+                <a href="#map-section" class="nav-item" data-view="map-section">
+                    <i data-lucide="map-pin"></i>
+                    <span>Mapa Activo</span>
+                </a>
+                <a href="#changas-section" class="nav-item" data-view="changas-section">
+                    <i data-lucide="briefcase"></i>
+                    <span id="nav-changas-label">Mis Changas</span>
+                </a>
+                <a href="#receipts-section" class="nav-item" data-view="receipts-section">
+                    <i data-lucide="file-text"></i>
+                    <span id="nav-receipts-label">Monotributo & Facturas</span>
+                </a>
+                <a href="#contributions-section" class="nav-item" data-view="contributions-section">
+                    <i data-lucide="heart-pulse"></i>
+                    <span id="nav-contributions-label">Aportes Sociales</span>
+                </a>
+            </nav>
+            
+            <button id="reset-demo-btn" class="reset-demo-btn" type="button" title="Borra los datos guardados y restaura la demostración">
+                <i data-lucide="rotate-ccw"></i>
+                <span>Reiniciar demostración</span>
+            </button>
+
+            <div class="user-profile-summary">
+                <div class="avatar">
+                    <img src="https://api.dicebear.com/7.x/bottts/svg?seed=carlos" alt="Carlos Avatar">
+                </div>
+                <div class="profile-info">
+                    <span class="profile-name">Carlos Gómez</span>
+                    <span class="profile-role">Changador • Cat. B</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            
+            <!-- Header Bar -->
+            <header class="app-header">
+                <div class="header-left">
+                    <button class="mobile-menu-btn" id="mobile-menu-toggle">
+                        <i data-lucide="menu"></i>
+                    </button>
+                    <h1 class="current-view-title">Motor Agéntico</h1>
+                </div>
+                
+                <div class="header-right">
+                    <!-- Mode Selector (Cliente vs Changador) -->
+                    <div class="mode-toggle-container">
+                        <span class="mode-label active" id="label-client">Cliente</span>
+                        <div class="switch" id="mode-switch">
+                            <div class="switch-handle"></div>
+                        </div>
+                        <span class="mode-label" id="label-worker">Changador</span>
+                    </div>
+                    
+                    <!-- Notifications -->
+                    <div class="notification-bell" id="notif-btn">
+                        <i data-lucide="bell"></i>
+                        <span class="badge" id="notif-count">2</span>
+                        
+                        <div class="notif-dropdown hidden" id="notif-dropdown">
+                            <div class="notif-header">
+                                <h3>Notificaciones</h3>
+                                <button class="clear-notif-btn" id="clear-notif">Limpiar</button>
+                            </div>
+                            <div class="notif-list" id="notif-list">
+                                <!-- Notifications dynamically inserted here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dynamic Views -->
+            <div class="view-viewport">
+                
+                <!-- 0. MOTOR AGÉNTICO / DASHBOARD IA -->
+                <section id="agent-section" class="app-view active">
+                    <div class="section-container agent-dashboard">
+                        <div class="section-header-row">
+                            <div>
+                                <span class="agent-eyebrow"><i data-lucide="sparkles"></i> Sistema inteligente explicable</span>
+                                <h2>Motor Agéntico Chang@</h2>
+                                <p class="section-subtitle">Observa solicitudes, analiza necesidades, recomienda profesionales y conserva memoria para mejorar decisiones futuras.</p>
+                            </div>
+                            <span class="agent-live"><span class="pulse-dot"></span> Agente activo</span>
+                        </div>
+
+                        <div class="agent-metrics">
+                            <article class="card metric-card"><small>Análisis realizados</small><strong id="agent-analysis-count">0</strong><span>guardados en memoria local</span></article>
+                            <article class="card metric-card"><small>Casos en memoria</small><strong id="agent-memory-count">0</strong><span>changas + decisiones IA</span></article>
+                            <article class="card metric-card"><small>Confianza promedio</small><strong id="agent-confidence">—</strong><span>sobre recomendaciones</span></article>
+                            <article class="card metric-card"><small>Resolución registrada</small><strong id="agent-resolution">0%</strong><span>trabajos finalizados</span></article>
+                        </div>
+
+                        <div class="agent-dashboard-grid">
+                            <article class="card agent-cycle-card">
+                                <div class="card-heading"><div><small>Orquestación cíclica</small><h3>Ciclo de decisión</h3></div><i data-lucide="refresh-cw"></i></div>
+                                <div class="agent-cycle">
+                                    <div class="agent-step"><span>1</span><div><strong>Observación</strong><small>Captura el pedido del usuario</small></div></div>
+                                    <div class="agent-step"><span>2</span><div><strong>Análisis</strong><small>Detecta rubro, señales y urgencia</small></div></div>
+                                    <div class="agent-step"><span>3</span><div><strong>Planificación</strong><small>Estima duración, rango y prioridad</small></div></div>
+                                    <div class="agent-step"><span>4</span><div><strong>Acción</strong><small>Recomienda profesionales cercanos</small></div></div>
+                                    <div class="agent-step"><span>5</span><div><strong>Memoria</strong><small>Registra decisión y resultado</small></div></div>
+                                    <div class="agent-step"><span>6</span><div><strong>Aprendizaje</strong><small>Ajusta estadísticas futuras</small></div></div>
+                                </div>
+                            </article>
+
+                            <article class="card last-decision-card">
+                                <div class="card-heading"><div><small>IA explicable</small><h3>Última decisión</h3></div><i data-lucide="scan-search"></i></div>
+                                <div id="agent-last-decision" class="agent-empty">Todavía no hay análisis. Probá el asistente con una necesidad real.</div>
+                                <button class="btn btn-primary btn-block" id="agent-go-assistant" type="button"><i data-lucide="message-square-text"></i> Probar asistente</button>
+                            </article>
+                        </div>
+
+                        <article class="card agent-learning-card">
+                            <div class="card-heading"><div><small>Memoria persistente</small><h3>Aprendizaje por rubro</h3></div><span id="agent-memory-status">LocalStorage activo</span></div>
+                            <div id="agent-learning-bars" class="learning-bars"></div>
+                        </article>
+                    </div>
+                </section>
+
+                <!-- 1. MAP SECTION (Uber style) -->
+                <section id="map-section" class="app-view">
+                    <div class="map-layout">
+                        <div class="map-sidebar">
+                            
+                            <!-- Search & Filter Card -->
+                            <div class="search-card card">
+                                <h2 id="map-role-heading">¿Qué servicio necesitás?</h2>
+                                <p class="card-subtitle" id="map-role-subtitle">Conectando profesionales independientes al instante</p>
+                                
+                                <div class="search-input-wrapper">
+                                    <i data-lucide="search" class="search-icon"></i>
+                                    <input type="text" id="job-search" placeholder="Plomero, gasista, electricista, paseador...">
+                                </div>
+                                <div class="location-control" id="location-control">
+                                    <button class="btn btn-secondary location-button" id="btn-use-location" type="button">
+                                        <i data-lucide="locate-fixed"></i> Usar mi ubicación
+                                    </button>
+                                    <div class="location-copy">
+                                        <strong id="location-title">Ubicación alternativa activa</strong>
+                                        <span id="location-status">Recoleta, CABA. Podés habilitar tu ubicación real.</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="ai-assistant-card" id="ai-assistant-card">
+                                    <div class="ai-assistant-header">
+                                        <div>
+                                            <span class="ai-kicker"><i data-lucide="sparkles"></i> Asistente IA</span>
+                                            <h3>Contame qué necesitás</h3>
+                                        </div>
+                                        <span class="ai-status">Activo</span>
+                                    </div>
+                                    <textarea id="ai-job-description" rows="3" placeholder="Ej.: Pierde agua debajo de la pileta y necesito arreglarlo mañana."></textarea>
+                                    <div class="ai-actions">
+                                        <button class="btn btn-primary" id="btn-analyze-job" type="button">
+                                            <i data-lucide="brain-circuit"></i> Analizar pedido
+                                        </button>
+                                        <button class="btn btn-secondary" id="btn-ai-example" type="button">Usar ejemplo</button>
+                                    </div>
+                                    <div id="ai-result" class="ai-result hidden" aria-live="polite"></div>
+                                    <p class="ai-disclaimer">Prototipo académico: analiza el texto mediante reglas explicables y memoria local.</p>
+                                </div>
+
+                                <div class="category-chips" id="category-chips">
+                                    <button class="chip active" data-cat="all">Todos</button>
+                                    <button class="chip" data-cat="plumber"><i data-lucide="wrench"></i> Plomería</button>
+                                    <button class="chip" data-cat="electrician"><i data-lucide="zap"></i> Electricidad</button>
+                                    <button class="chip" data-cat="cleaning"><i data-lucide="sparkles"></i> Limpieza</button>
+                                    <button class="chip" data-cat="gardening"><i data-lucide="flower"></i> Jardinería</button>
+                                    <button class="chip" data-cat="pets"><i data-lucide="dog"></i> Mascotas</button>
+                                </div>
+                            </div>
+                            
+                            <!-- Active Request / Match Panel -->
+                            <div class="match-panel-container">
+                                <!-- Default Prompt -->
+                                <div id="match-prompt" class="card empty-state-card">
+                                    <div class="empty-icon"><i data-lucide="navigation"></i></div>
+                                    <p>Seleccioná un profesional en el mapa o buscá una categoría para ver los changadores disponibles en tu zona.</p>
+                                </div>
+                                
+                                <!-- Worker Detail Card -->
+                                <div id="worker-detail-card" class="card worker-card hidden">
+                                    <div class="worker-card-header">
+                                        <div class="worker-avatar">
+                                            <img id="detail-avatar" src="" alt="Avatar">
+                                        </div>
+                                        <div class="worker-meta">
+                                            <h3 id="detail-name">Juan Pérez</h3>
+                                            <span class="rating"><i data-lucide="star"></i> <span id="detail-rating">4.8</span> (<span id="detail-jobs-count">120</span> changas)</span>
+                                            <span class="specialty-badge" id="detail-specialty">Plomero Matriculado</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="worker-stats">
+                                        <div class="stat">
+                                            <span class="stat-label">Distancia</span>
+                                            <span class="stat-value" id="detail-distance">1.2 km</span>
+                                        </div>
+                                        <div class="stat">
+                                            <span class="stat-label">Tarifa base</span>
+                                            <span class="stat-value" id="detail-price">$8.500</span>
+                                        </div>
+                                        <div class="stat">
+                                            <span class="stat-label">Monotributo</span>
+                                            <span class="stat-value status-badge ok" id="detail-tax">Categoría C</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <p class="worker-bio" id="detail-bio">Especialista en reparaciones de humedad, cañerías de termofusión e instalaciones de sanitarios. 10 años de experiencia.</p>
+                                    
+                                    <button class="btn btn-primary btn-block" id="btn-request-job">
+                                        <i data-lucide="navigation"></i> Solicitar Changa Ya
+                                    </button>
+                                </div>
+
+                                <!-- Ride/Trip Progress panel -->
+                                <div id="trip-progress-card" class="card trip-card hidden">
+                                    <div class="trip-header">
+                                        <span class="trip-status-badge animated" id="trip-status-text">Buscando confirmación...</span>
+                                        <div class="loader-bar"><div class="loader-progress" id="trip-progress-bar"></div></div>
+                                    </div>
+                                    
+                                    <div class="trip-body">
+                                        <div class="trip-worker-info">
+                                            <img id="trip-avatar" src="" alt="Avatar">
+                                            <div>
+                                                <h4 id="trip-worker-name">Juan Pérez</h4>
+                                                <p id="trip-worker-phone"><i data-lucide="phone"></i> +54 9 11 5555-1234</p>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="trip-timeline">
+                                            <div class="timeline-step done" id="step-req">
+                                                <div class="step-dot"></div>
+                                                <span class="step-label">Solicitud enviada</span>
+                                            </div>
+                                            <div class="timeline-step" id="step-route">
+                                                <div class="step-dot"></div>
+                                                <span class="step-label">En camino (Est. 5 min)</span>
+                                            </div>
+                                            <div class="timeline-step" id="step-work">
+                                                <div class="step-dot"></div>
+                                                <span class="step-label">Trabajo en curso</span>
+                                            </div>
+                                            <div class="timeline-step" id="step-done">
+                                                <div class="step-dot"></div>
+                                                <span class="step-label">Finalizado</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="trip-actions">
+                                        <button class="btn btn-danger-outline btn-block" id="btn-cancel-trip">Cancelar Solicitud</button>
+                                        <button class="btn btn-success btn-block hidden" id="btn-complete-trip">Confirmar Finalización</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Leaflet Map Container -->
+                        <div class="map-view-wrapper">
+                            <div id="map"></div>
+                            <!-- Live status indicator -->
+                            <div class="map-overlay-badge hidden" id="map-indicator">
+                                <span class="pulse-dot"></span>
+                                <span id="map-indicator-text">Simulando trayecto...</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 2. MIS CHANGAS SECTION -->
+                <section id="changas-section" class="app-view">
+                    <div class="section-container">
+                        <div class="section-header-row">
+                            <div>
+                                <h2 id="changas-title">Historial de Changas</h2>
+                                <p class="section-subtitle" id="changas-subtitle">Gestioná tus contratos, facturación y pagos realizados</p>
+                            </div>
+                            <div class="filter-actions">
+                                <button class="btn btn-secondary" id="btn-export-history"><i data-lucide="download"></i> Exportar CSV</button>
+                            </div>
+                        </div>
+                        
+                        <div class="changas-table-card card">
+                            <div class="table-responsive">
+                                <table class="custom-table">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Servicio / Rubro</th>
+                                            <th>Fecha</th>
+                                            <th>Profesional / Cliente</th>
+                                            <th>Monto</th>
+                                            <th>Estado</th>
+                                            <th>Aportes AFIP</th>
+                                            <th>Facturación</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="changas-history-tbody">
+                                        <!-- Dynamically loaded via app.js -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 3. RECEIPTS SECTION (Monotributo & Invoices) -->
+                <section id="receipts-section" class="app-view">
+                    <div class="section-container">
+                        <div class="receipts-grid">
+                            
+                            <!-- Left: Monotributo Overview Dashboard -->
+                            <div class="receipts-dashboard">
+                                <div class="card card-gradient">
+                                    <div class="card-gradient-content">
+                                        <span class="tax-tag">AFIP Monotributo</span>
+                                        <h2>Mi Estado Tributario</h2>
+                                        
+                                        <div class="monotributo-info-row">
+                                            <div class="info-block">
+                                                <span class="label">Categoría Actual</span>
+                                                <span class="value-highlight">B (Servicios)</span>
+                                            </div>
+                                            <div class="info-block">
+                                                <span class="label">Límite Anual</span>
+                                                <span class="value">$6.430.000 ARS</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="progress-container">
+                                            <div class="progress-bar-label">
+                                                <span>Facturado acumulado (últimos 12 meses)</span>
+                                                <span class="progress-percent" id="billing-percent">34%</span>
+                                            </div>
+                                            <div class="progress-bar-track">
+                                                <div class="progress-bar-fill" id="billing-progress-fill" style="width: 34%;"></div>
+                                            </div>
+                                            <div class="progress-sub-text">
+                                                Facturado: <strong id="billed-amount">$2.186.200</strong> de $6.430.000
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="card">
+                                    <h3>Mis Recibos Generados</h3>
+                                    <p class="card-subtitle">Descargá tus comprobantes oficiales de Factura C monotributista</p>
+                                    
+                                    <div class="receipts-list" id="generated-receipts-list">
+                                        <!-- Dynamically generated invoices -->
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Right: Invoice Generator Form -->
+                            <div class="invoice-generator">
+                                <div class="card">
+                                    <div class="invoice-form-header">
+                                        <h3>Emitir Nueva Factura Electrónica</h3>
+                                        <span class="invoice-type">Factura C (AFIP)</span>
+                                    </div>
+                                    
+                                    <form id="invoice-form" class="custom-form">
+                                        <div class="form-group-row">
+                                            <div class="form-group">
+                                                <label for="inv-emitter-name">Emisor (Tus Datos)</label>
+                                                <input type="text" id="inv-emitter-name" value="Carlos Gómez" readonly>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="inv-emitter-cuit">CUIT Emisor</label>
+                                                <input type="text" id="inv-emitter-cuit" value="20-34981726-9" readonly>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="divider">Datos del Receptor (Cliente)</div>
+                                        
+                                        <div class="form-group-row">
+                                            <div class="form-group">
+                                                <label for="inv-client-name">Nombre o Razón Social</label>
+                                                <input type="text" id="inv-client-name" placeholder="Ej. Ana María Rodríguez" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="inv-client-cuit">CUIT / CUIL / DNI</label>
+                                                <input type="text" id="inv-client-cuit" placeholder="Ej. 27-28394817-2" required>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label for="inv-client-iva">Condición frente al IVA</label>
+                                            <select id="inv-client-iva">
+                                                <option value="Consumidor Final">Consumidor Final</option>
+                                                <option value="Monotributista">Responsable Monotributo</option>
+                                                <option value="Inscripto">Responsable Inscripto</option>
+                                                <option value="Exento">Exento</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div class="divider">Detalle del Servicio</div>
+                                        
+                                        <div class="form-group">
+                                            <label for="inv-description">Descripción de la Changa</label>
+                                            <textarea id="inv-description" rows="2" placeholder="Ej. Reparación de filtración en cocina, cambio de caños de agua caliente y fría." required></textarea>
+                                        </div>
+                                        
+                                        <div class="form-group-row">
+                                            <div class="form-group">
+                                                <label for="inv-amount">Monto del Servicio ($ ARS)</label>
+                                                <input type="number" id="inv-amount" placeholder="Ej. 18500" min="100" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="inv-payment-method">Forma de Pago</label>
+                                                <select id="inv-payment-method">
+                                                    <option value="Transferencia">Transferencia Bancaria / Digital</option>
+                                                    <option value="Efectivo">Efectivo</option>
+                                                    <option value="Debito/Credito">Tarjeta de Débito/Crédito</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        
+                                        <button type="submit" class="btn btn-success btn-block" id="btn-emit-invoice">
+                                            <i data-lucide="file-check"></i> Emitir y Descargar Factura C
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 4. CONTRIBUTIONS SECTION -->
+                <section id="contributions-section" class="app-view">
+                    <div class="section-container">
+                        
+                        <div class="contributions-layout">
+                            
+                            <!-- Left: Status and Information -->
+                            <div class="contributions-status-col">
+                                <div class="card">
+                                    <h3>Resumen de Cobertura</h3>
+                                    <p class="card-subtitle">Estado actual de tus aportes obligatorios y voluntarios</p>
+                                    
+                                    <div class="coverage-cards-grid">
+                                        <div class="coverage-status-card active">
+                                            <div class="icon-circle"><i data-lucide="shield-check"></i></div>
+                                            <div class="cov-details">
+                                                <h4>Obra Social</h4>
+                                                <p class="cov-name" id="cov-social-name">OSECAC (Comercio)</p>
+                                                <span class="status-indicator-badge success">Al día (Junio 2026)</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="coverage-status-card active">
+                                            <div class="icon-circle"><i data-lucide="users"></i></div>
+                                            <div class="cov-details">
+                                                <h4>Aporte Sindical</h4>
+                                                <p class="cov-name" id="cov-union-name">UOCRA (Construcción)</p>
+                                                <span class="status-indicator-badge success">Al día (Junio 2026)</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="coverage-status-card warning">
+                                            <div class="icon-circle"><i data-lucide="heart-handshake"></i></div>
+                                            <div class="cov-details">
+                                                <h4>Medicina Prepaga</h4>
+                                                <p class="cov-name" id="cov-prepaga-name">OSDE (Plan 210)</p>
+                                                <span class="status-indicator-badge warning">Vence en 5 días</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="contributions-history-wrapper">
+                                        <h4>Historial Reciente de Aportes</h4>
+                                        <div class="contributions-history-list" id="contributions-history-list">
+                                            <!-- Dynamically generated list of payments -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Right: Contribution Payment Portal -->
+                            <div class="contributions-portal-col">
+                                <div class="card">
+                                    <h3>Portal Integrado de Aportes</h3>
+                                    <p class="card-subtitle">Realizá tus aportes a cualquier obra social, sindicato o medicina privada</p>
+                                    
+                                    <div class="portal-tabs">
+                                        <button class="portal-tab active" data-portal="social-security">
+                                            <i data-lucide="shield"></i> Obra Social
+                                        </button>
+                                        <button class="portal-tab" data-portal="union">
+                                            <i data-lucide="users"></i> Sindicato
+                                        </button>
+                                        <button class="portal-tab" data-portal="prepaid">
+                                            <i data-lucide="heart"></i> Prepaga
+                                        </button>
+                                    </div>
+                                    
+                                    <div class="portal-forms-container">
+                                        <form id="contribution-payment-form" class="custom-form">
+                                            <input type="hidden" id="contribution-type" value="Obra Social">
+                                            
+                                            <div class="form-group">
+                                                <label for="contribution-entity" id="entity-label">Seleccionar Obra Social</label>
+                                                <select id="contribution-entity" class="form-select">
+                                                    <!-- Dynamic options -->
+                                                </select>
+                                            </div>
+                                            
+                                            <div class="form-group">
+                                                <label for="contribution-cuit">CUIT del Beneficiario</label>
+                                                <input type="text" id="contribution-cuit" value="20-34981726-9" readonly>
+                                            </div>
+                                            
+                                            <div class="form-group-row">
+                                                <div class="form-group">
+                                                    <label for="contribution-period">Período de Pago</label>
+                                                    <select id="contribution-period">
+                                                        <option value="2026-06">Junio 2026</option>
+                                                        <option value="2026-07">Julio 2026</option>
+                                                        <option value="2026-08">Agosto 2026</option>
+                                                    </select>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="contribution-amount">Monto del Aporte ($ ARS)</label>
+                                                    <input type="number" id="contribution-amount" value="8200" required>
+                                                    <span class="input-helper" id="amount-helper">Aporte básico obligatorio según Monotributo Cat B</span>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="form-group">
+                                                <label>Método de Pago</label>
+                                                <div class="payment-methods-grid">
+                                                    <label class="pay-method-card active">
+                                                        <input type="radio" name="pay-method" value="mercado-pago" checked>
+                                                        <div class="pay-method-content">
+                                                            <i data-lucide="wallet"></i>
+                                                            <span>Mercado Pago</span>
+                                                        </div>
+                                                    </label>
+                                                    <label class="pay-method-card">
+                                                        <input type="radio" name="pay-method" value="transfer">
+                                                        <div class="pay-method-content">
+                                                            <i data-lucide="banknote"></i>
+                                                            <span>Transferencia</span>
+                                                        </div>
+                                                    </label>
+                                                    <label class="pay-method-card">
+                                                        <input type="radio" name="pay-method" value="card">
+                                                        <div class="pay-method-content">
+                                                            <i data-lucide="credit-card"></i>
+                                                            <span>Tarjeta</span>
+                                                        </div>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            
+                                            <button type="submit" class="btn btn-primary btn-block" id="btn-pay-contribution">
+                                                <i data-lucide="credit-card"></i> Procesar Aporte y Confirmar Cobertura
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                        
+                    </div>
+                </section>
+
+            </div>
+
+        </main>
+        
+    </div>
+
+    <!-- Hidden Printable AFIP Invoice Frame (For download emulation) -->
+    <div id="afip-invoice-print-container" class="hidden">
+        <!-- Structured Factura C template for downloading as PDF -->
+    </div>
+
+    <!-- App JavaScript files -->
+    <!-- Leaflet JS for Uber-like map -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="js/robustness.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/map.js"></script>
+    <script src="js/assistant.js"></script>
+    <script src="js/agent-dashboard.js"></script>
+    <script src="js/role-experience.js"></script>
+    <script src="js/receipts.js"></script>
+    <script src="js/contributions.js"></script>
+</body>
+</html>
