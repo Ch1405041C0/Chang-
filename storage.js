@@ -42,7 +42,7 @@ window.ChangaStorage = {
     }
 };
 
-// Compatibilidad ligera: StorageService API (load/save) usada por varios módulos.
+// API compatible usada por assistant.js, map.js y agent-dashboard.js
 window.StorageService = {
     load(key, defaultValue = null) {
         try {
