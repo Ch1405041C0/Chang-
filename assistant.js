@@ -7,15 +7,50 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!input || !analyzeBtn || !result) return;
 
     const rules = [
-        { category: "plumber", label: "Plomería", icon: "wrench", words: ["agua","pérdida","pierde","canilla","caño","cañería","pileta","inodoro","grifería","filtración","humedad"], duration: "1 a 3 horas", price: [18000, 45000] },
-        { category: "electrician", label: "Electricidad", icon: "zap", words: ["luz","eléctrico","electricidad","cortocircuito","térmica","disyuntor","enchufe","cable","corriente","tablero"], duration: "1 a 4 horas", price: [22000, 55000] },
-        { category: "cleaning", label: "Limpieza", icon: "sparkles", words: ["limpiar","limpieza","suciedad","desinfección","post obra","oficina","vidrios","sanitizar"], duration: "2 a 6 horas", price: [15000, 50000] },
-        { category: "gardening", label: "Jardinería", icon: "flower", words: ["pasto","césped","jardín","jardinería","poda","árbol","plantas","desmalezar"], duration: "2 a 5 horas", price: [18000, 48000] },
-        { category: "pets", label: "Mascotas", icon: "dog", words: ["perro","gato","mascota","paseo","pasear","cuidar","adiestrar"], duration: "1 a 3 horas", price: [7000, 25000] }
+        {
+            category: "plumber",
+            label: "Plomería",
+            icon: "wrench",
+            words: ["agua","pérdida","pierde","canilla","caño","cañería","pileta","inodoro","grifería","filtración","humedad","fuga"],
+            duration: "1 a 4 horas",
+            price: [6000, 25000]
+        },
+        {
+            category: "electrician",
+            label: "Electricidad",
+            icon: "zap",
+            words: ["luz","eléctrico","electricidad","cortocircuito","térmica","disyuntor","enchufe","cable","corriente","tablero","chispa","humo","sin luz"],
+            duration: "0.5 a 3 horas",
+            price: [8000, 30000]
+        },
+        {
+            category: "cleaning",
+            label: "Limpieza",
+            icon: "sparkles",
+            words: ["limpiar","limpieza","suciedad","desinfección","post obra","oficina","vidrios","sanitizar","sanitización","fregado"],
+            duration: "2 a 6 horas",
+            price: [5000, 22000]
+        },
+        {
+            category: "gardening",
+            label: "Jardinería",
+            icon: "flower",
+            words: ["pasto","césped","jardín","jardinería","poda","árbol","plantas","desmalezar","césped"],
+            duration: "2 a 5 horas",
+            price: [7000, 25000]
+        },
+        {
+            category: "pets",
+            label: "Mascotas",
+            icon: "dog",
+            words: ["perro","gato","mascota","paseo","pasear","cuidar","adiestrar","adiestramiento"],
+            duration: "1 a 3 horas",
+            price: [4000, 15000]
+        }
     ];
 
-    const normalize = (value) => value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-    const money = (value) => `$${value.toLocaleString("es-AR")}`;
+    const normalize = (value) => (value || "").toLowerCase().normalize("NFD").replace(/[00-6f]/g, "");
+    const money = (value) => typeof value === "number" ? `$${value.toLocaleString("es-AR")}` : value;
 
     function analyze(text) {
         const normalized = normalize(text);
@@ -34,7 +69,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const urgency = urgentWords.some(w => normalized.includes(normalize(w))) ? "Alta" :
                         mediumWords.some(w => normalized.includes(normalize(w))) ? "Media" : "Normal";
         const confidence = Math.min(96, 58 + bestScore * 12 + (text.length > 35 ? 6 : 0));
-        const workers = (window.AppState?.workers || []).filter(w => w.category === best.category).sort((a,b) => b.rating-a.rating);
+        const workers = (window.AppState?.workers || []).filter(w => w.category === best.category).sort((a,b) => b.rating - a.rating);
         const reason = matchedWords.length
             ? `Detecté ${matchedWords.map(w => `“${w}”`).join(", ")} y las asocié con ${best.label}.`
             : `No encontré señales específicas; usé ${best.label} como categoría de respaldo para continuar el flujo.`;
@@ -49,9 +84,13 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function render(data) {
-        const recommended = data.workers[0];
+        const recommended = (data.workers && data.workers.length) ? data.workers[0] : null;
+        const priceRange = data.price || [5000, 20000];
+
         result.innerHTML = `
-            <div class="ai-result-title"><i data-lucide="${data.icon}"></i><div><small>Rubro sugerido</small><strong>${data.label}</strong></div></div>
+            <div class="ai-result-title"><i data-lucide="${data.icon || 'sparkles'}"></i>
+                <div><small>Rubro sugerido</small><strong>${data.label}</strong></div>
+            </div>
             <div class="ai-explanation">
                 <strong><i data-lucide="search-check"></i> ¿Por qué recomendé esto?</strong>
                 <p>${data.reason}</p>
@@ -59,16 +98,21 @@ document.addEventListener("DOMContentLoaded", () => {
             </div>
             <div class="ai-grid">
                 <div><small>Prioridad</small><strong>${data.urgency}</strong></div>
-                <div><small>Duración estimada</small><strong>${data.duration}</strong></div>
-                <div><small>Rango orientativo</small><strong>${money(data.price[0])} – ${money(data.price[1])}</strong></div>
+                <div><small>Duración estimada</small><strong>${data.duration || 'A confirmar'}</strong></div>
+                <div><small>Rango orientativo</small><strong>${money(priceRange[0])} – ${money(priceRange[1])}</strong></div>
                 <div><small>Confianza</small><strong>${data.confidence}%</strong></div>
             </div>
-            ${recommended ? `<div class="ai-recommendation"><span>Mejor coincidencia</span><strong>${recommended.name}</strong><small>${recommended.specialty} · ⭐ ${recommended.rating} · ${recommended.distance}</small></div>` : ""}
-            <button class="btn btn-primary btn-block" id="btn-show-ai-workers" type="button">Ver profesionales recomendados</button>
+            ${recommended ? `<div class="ai-recommendation"><span>Mejor coincidencia</span>
+                <strong>${recommended.name}</strong>
+                <small>${recommended.specialty} · ⭐ ${recommended.rating} · ${money(recommended.price)}</small>
+            </div>` : ''}
+            <div style="margin-top:.75rem;">
+                <button class="btn btn-primary btn-block" id="btn-show-ai-workers" type="button">Ver profesionales recomendados</button>
+            </div>
         `;
         result.classList.remove("hidden");
         result.querySelector("#btn-show-ai-workers")?.addEventListener("click", () => applyCategory(data.category));
-        if (window.lucide) window.safeCreateIcons({ nodeList: result.querySelectorAll("[data-lucide]") });
+        if (window.safeCreateIcons) window.safeCreateIcons({ nodeList: result.querySelectorAll("[data-lucide]") });
     }
 
     analyzeBtn.addEventListener("click", () => {
