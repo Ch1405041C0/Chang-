@@ -49,7 +49,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     ];
 
-    const normalize = (value) => (value || "").toLowerCase().normalize("NFD").replace(/[00-6f]/g, "");
+    // Protect normalize against null/undefined and normalize accents correctly
+    const normalize = (value) => (value || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
     const money = (value) => typeof value === "number" ? `$${value.toLocaleString("es-AR")}` : value;
 
     function analyze(text) {
