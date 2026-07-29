@@ -225,7 +225,7 @@
                                             <span class="specialty-badge" id="detail-specialty">Plomero Matriculado</span>
                                         </div>
                                     </div>
-                                    
+
                                     <div class="worker-stats">
                                         <div class="stat">
                                             <span class="stat-label">Distancia</span>
@@ -240,9 +240,9 @@
                                             <span class="stat-value status-badge ok" id="detail-tax">Categoría C</span>
                                         </div>
                                     </div>
-                                    
+
                                     <p class="worker-bio" id="detail-bio">Especialista en reparaciones de humedad, cañerías de termofusión e instalaciones de sanitarios. 10 años de experienci[...]
-                                    
+
                                     <button class="btn btn-primary btn-block" id="btn-request-job">
                                         <i data-lucide="navigation"></i> Solicitar Changa Ya
                                     </button>
@@ -254,7 +254,7 @@
                                         <span class="trip-status-badge animated" id="trip-status-text">Buscando confirmación...</span>
                                         <div class="loader-bar"><div class="loader-progress" id="trip-progress-bar"></div></div>
                                     </div>
-                                    
+
                                     <div class="trip-body">
                                         <div class="trip-worker-info">
                                             <img id="trip-avatar" src="" alt="Avatar">
@@ -263,7 +263,7 @@
                                                 <p id="trip-worker-phone"><i data-lucide="phone"></i> +54 9 11 5555-1234</p>
                                             </div>
                                         </div>
-                                        
+
                                         <div class="trip-timeline">
                                             <div class="timeline-step done" id="step-req">
                                                 <div class="step-dot"></div>
@@ -283,7 +283,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    
+
                                     <div class="trip-actions">
                                         <button class="btn btn-danger-outline btn-block" id="btn-cancel-trip">Cancelar Solicitud</button>
                                         <button class="btn btn-success btn-block hidden" id="btn-complete-trip">Confirmar Finalización</button>
@@ -316,7 +316,7 @@
                                 <button class="btn btn-secondary" id="btn-export-history"><i data-lucide="download"></i> Exportar CSV</button>
                             </div>
                         </div>
-                        
+
                         <div class="changas-table-card card">
                             <div class="table-responsive">
                                 <table class="custom-table">
@@ -436,7 +436,7 @@
                                         
                                         <div class="form-group">
                                             <label for="inv-description">Descripción de la Changa</label>
-                                            <textarea id="inv-description" rows="2" placeholder="Ej. Reparación de filtración en cocina, cambio de caños de agua caliente y fría." required></t[...]
+                                            <textarea id="inv-description" rows="2" placeholder="Ej. Reparación de filtración en cocina, cambio de caños de agua caliente y fría." required></textarea>
                                         </div>
                                         
                                         <div class="form-group-row">
@@ -495,138 +495,4 @@
                                                 <span class="status-indicator-badge success">Al día (Junio 2026)</span>
                                             </div>
                                         </div>
-                                        
-                                        <div class="coverage-status-card warning">
-                                            <div class="icon-circle"><i data-lucide="heart-handshake"></i></div>
-                                            <div class="cov-details">
-                                                <h4>Medicina Prepaga</h4>
-                                                <p class="cov-name" id="cov-prepaga-name">OSDE (Plan 210)</p>
-                                                <span class="status-indicator-badge warning">Vence en 5 días</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="contributions-history-wrapper">
-                                        <h4>Historial Reciente de Aportes</h4>
-                                        <div class="contributions-history-list" id="contributions-history-list">
-                                            <!-- Dynamically generated list of payments -->
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Right: Contribution Payment Portal -->
-                            <div class="contributions-portal-col">
-                                <div class="card">
-                                    <h3>Portal Integrado de Aportes</h3>
-                                    <p class="card-subtitle">Realizá tus aportes a cualquier obra social, sindicato o medicina privada</p>
-                                    
-                                    <div class="portal-tabs">
-                                        <button class="portal-tab active" data-portal="social-security">
-                                            <i data-lucide="shield"></i> Obra Social
-                                        </button>
-                                        <button class="portal-tab" data-portal="union">
-                                            <i data-lucide="users"></i> Sindicato
-                                        </button>
-                                        <button class="portal-tab" data-portal="prepaid">
-                                            <i data-lucide="heart"></i> Prepaga
-                                        </button>
-                                    </div>
-                                    
-                                    <div class="portal-forms-container">
-                                        <form id="contribution-payment-form" class="custom-form">
-                                            <input type="hidden" id="contribution-type" value="Obra Social">
-                                            
-                                            <div class="form-group">
-                                                <label for="contribution-entity" id="entity-label">Seleccionar Obra Social</label>
-                                                <select id="contribution-entity" class="form-select">
-                                                    <!-- Dynamic options -->
-                                                </select>
-                                            </div>
-                                            
-                                            <div class="form-group">
-                                                <label for="contribution-cuit">CUIT del Beneficiario</label>
-                                                <input type="text" id="contribution-cuit" value="20-34981726-9" readonly>
-                                            </div>
-                                            
-                                            <div class="form-group-row">
-                                                <div class="form-group">
-                                                    <label for="contribution-period">Período de Pago</label>
-                                                    <select id="contribution-period">
-                                                        <option value="2026-06">Junio 2026</option>
-                                                        <option value="2026-07">Julio 2026</option>
-                                                        <option value="2026-08">Agosto 2026</option>
-                                                    </select>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label for="contribution-amount">Monto del Aporte ($ ARS)</label>
-                                                    <input type="number" id="contribution-amount" value="8200" required>
-                                                    <span class="input-helper" id="amount-helper">Aporte básico obligatorio según Monotributo Cat B</span>
-                                                </div>
-                                            </div>
-                                            
-                                            <div class="form-group">
-                                                <label>Método de Pago</label>
-                                                <div class="payment-methods-grid">
-                                                    <label class="pay-method-card active">
-                                                        <input type="radio" name="pay-method" value="mercado-pago" checked>
-                                                        <div class="pay-method-content">
-                                                            <i data-lucide="wallet"></i>
-                                                            <span>Mercado Pago</span>
-                                                        </div>
-                                                    </label>
-                                                    <label class="pay-method-card">
-                                                        <input type="radio" name="pay-method" value="transfer">
-                                                        <div class="pay-method-content">
-                                                            <i data-lucide="banknote"></i>
-                                                            <span>Transferencia</span>
-                                                        </div>
-                                                    </label>
-                                                    <label class="pay-method-card">
-                                                        <input type="radio" name="pay-method" value="card">
-                                                        <div class="pay-method-content">
-                                                            <i data-lucide="credit-card"></i>
-                                                            <span>Tarjeta</span>
-                                                        </div>
-                                                    </label>
-                                                </div>
-                                            </div>
-                                            
-                                            <button type="submit" class="btn btn-primary btn-block" id="btn-pay-contribution">
-                                                <i data-lucide="credit-card"></i> Procesar Aporte y Confirmar Cobertura
-                                            </button>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                        </div>
-                        
-                    </div>
-                </section>
 
-            </div>
-
-        </main>
-        
-    </div>
-
-    <!-- Hidden Printable AFIP Invoice Frame (For download emulation) -->
-    <div id="afip-invoice-print-container" class="hidden">
-        <!-- Structured Factura C template for downloading as PDF -->
-    </div>
-
-    <!-- App JavaScript files -->
-    <!-- Leaflet JS for Uber-like map -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-    <script src="robustness.js"></script>
-    <script src="storage.js"></script>
-    <script src="app.js"></script>
-    <script src="map.js"></script>
-    <script src="assistant.js"></script>
-    <script src="agent-dashboard.js"></script>
-    <script src="role-experience.js"></script>
-    <script src="receipts.js"></script>
-    <script src="contributions.js"></script>
-</body>
-</html>
