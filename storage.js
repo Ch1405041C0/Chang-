@@ -41,3 +41,31 @@ window.ChangaStorage = {
         localStorage.removeItem(this.key);
     }
 };
+
+// Compatibilidad ligera: StorageService API (load/save) usada por varios módulos.
+window.StorageService = {
+    load(key, defaultValue = null) {
+        try {
+            const raw = localStorage.getItem(key);
+            if (raw === null || raw === undefined) return defaultValue;
+            return JSON.parse(raw);
+        } catch (e) {
+            console.warn(`StorageService.load failed for key ${key}:`, e);
+            return defaultValue;
+        }
+    },
+    save(key, value) {
+        try {
+            localStorage.setItem(key, JSON.stringify(value));
+        } catch (e) {
+            console.warn(`StorageService.save failed for key ${key}:`, e);
+        }
+    },
+    remove(key) {
+        try {
+            localStorage.removeItem(key);
+        } catch (e) {
+            console.warn(`StorageService.remove failed for key ${key}:`, e);
+        }
+    }
+};
